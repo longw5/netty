@@ -1,3 +1,5 @@
 protoc.exe -I=proto的输入目录 --java_out=java类输出目录 proto的输入目录包括包括proto文件
 
 protoc.exe -I=D:\\proto --java_out=D:\\proto person-entity.proto
+
+protoc.exe -I=D:\proto\calcite --java_out=D:\proto\calcite D:\proto\calcite\requests.proto
