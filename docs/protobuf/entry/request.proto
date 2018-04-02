@@ -1,0 +1,10 @@
+message OpenConnection {  
+  required int32 connectionid = 1;
+  required string path = 2;
+  optional string timestamp = 3;
+}
+message CloseConnection {  
+  required int32 connectionid = 1;
+  required string path = 2;
+  optional string timestamp = 3;
+}
