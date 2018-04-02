@@ -7,6 +7,8 @@ import org.netty.codec.ProtocolEncoder;
 import org.netty.handler.ProtocolClientHandler;
 import org.netty.msg.ProtocolHeader;
 import org.netty.msg.ProtocolMsg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -24,6 +26,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  */
 public class ProtocolClient {
 
+	private static final Logger logger = LoggerFactory.getLogger(ProtocolClient.class);
 	private String host;
 	private int port;
 
@@ -50,20 +53,18 @@ public class ProtocolClient {
 			b.group(workerGroup); // (2)
 			b.channel(NioSocketChannel.class); // (3)
 			b.option(ChannelOption.SO_KEEPALIVE, true); // (4)
+			
 			b.handler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(
-							"decoder",
-							new ProtocolDecoder(MAX_FRAME_LENGTH,
-									LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH,
-									LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP));
+					ch.pipeline().addLast("decoder", new ProtocolDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET,
+							LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP));
 					ch.pipeline().addLast("encoder", new ProtocolEncoder());
 					ch.pipeline().addLast(new ProtocolClientHandler());
 
 				}
 			});
-
+			
 			// 启动客户端
 			ChannelFuture f = b.connect(host, port).sync(); // (5)
 
@@ -82,8 +83,7 @@ public class ProtocolClient {
 					sb.append(body);
 				}
 
-				byte[] bodyBytes = sb.toString().getBytes(
-						Charset.forName("utf-8"));
+				byte[] bodyBytes = sb.toString().getBytes(Charset.forName("utf-8"));
 				int bodySize = bodyBytes.length;
 				protocolHeader.setLen(bodySize);
 
@@ -105,7 +105,8 @@ public class ProtocolClient {
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws InterruptedException {
-		new ProtocolClient("localhost", 8082).run();
+		
+		new ProtocolClient("localhost", 1234).run();
 	}
 
 }
